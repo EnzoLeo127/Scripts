@@ -1,0 +1,3 @@
+for _,v in ipairs({122043534354142}) do
+    game["ReplicatedStorage"].BloxbizRemotes.CatalogOnPromptPurchase:InvokeServer(v); task.wait(8.5)
+end
