@@ -1,1 +1,8 @@
-a
+for i = 1, 10 do
+local args = {
+    [1] = "CollectItem"
+}
+
+game:GetService("ReplicatedStorage").Remotes.RobloxEventRE:FireServer(unpack(args))
+
+end
