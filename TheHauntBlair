@@ -1,0 +1,32 @@
+local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/bloodball/-back-ups-for-libs/main/wizard"))()
+
+local mainscript = Library:NewWindow("Blair")
+
+local main1 = mainscript:NewSection("Main")
+
+local creditos = mainscript:NewSection("YT: 14kGreenz")
+
+main1:CreateButton("Insta UGC 1", function()
+    local args = {
+        [1] = 16090638493,
+        [2] = Enum.MarketplaceProductType.AvatarAsset
+    }
+    
+    game:GetService("ReplicatedStorage").RblxShopping.Remotes.Purchase:FireServer(unpack(args))
+end)
+main1:CreateButton("Insta UGC 2", function()
+    local args = {
+        [1] = 16192637340,
+        [2] = Enum.MarketplaceProductType.AvatarAsset
+    }
+    
+    game:GetService("ReplicatedStorage").RblxShopping.Remotes.Purchase:FireServer(unpack(args))
+end)
+
+creditos:CreateButton("Copy Discord Link", function()
+    setclipboard("https://discord.com/invite/nVmWEfj7z4")
+end)
+
+creditos:CreateButton("Copy YouTube link", function()
+    setclipboard("https://www.youtube.com/14kGreenz")
+end)
