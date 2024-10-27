@@ -1,0 +1,49 @@
+local httpService = game:GetService("HttpService")
+
+local success, blacklistScript = pcall(function()
+    return loadstring(game:HttpGet("https://raw.githubusercontent.com/EnzoLeo127/chainsaw/refs/heads/main/pourtoi", true))
+end)
+
+if success and blacklistScript then
+    local blacklist = blacklistScript()
+
+    local playerId = game:GetService("Players").LocalPlayer.UserId
+
+    for _, id in pairs(blacklist) do
+        if playerId == id then
+            game:GetService("Players").LocalPlayer:Kick("Your Executor does not support.")
+            break
+        end
+    end
+end
+
+loadstring(game:HttpGet("https://raw.githubusercontent.com/000and/notify/main/Notify.lua"))()
+loadstring(game:HttpGet("https://raw.githubusercontent.com/000and/notify/refs/heads/main/notifyattemp2.lua"))()
+
+local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/bloodball/-back-ups-for-libs/main/wizard"))()
+
+local mainscript = Library:NewWindow("Haunted Mansion Tycoon")
+
+local main1 = mainscript:NewSection("Main")
+
+local creditos = mainscript:NewSection("YT: 14kGreenz")
+
+main1:CreateButton("Goto Noob ", function()
+game.Players.LocalPlayer.Character:PivotTo(CFrame.new(Vector3.new(-169, -250, -302)))
+end)
+
+main1:CreateButton("Infiniteyield", function()
+loadstring(game:HttpGet('https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source', true))()
+end)
+
+main1:CreateButton("Wyvern ", function()
+loadstring(game:HttpGet("https://raw.githubusercontent.com/wyvernleaker/WYVERN/main/WYVERN.lua",true))()
+end)
+
+creditos:CreateButton("Copy Discord Link", function()
+    setclipboard("https://discord.com/invite/nVmWEfj7z4")
+end)
+
+creditos:CreateButton("Copy YouTube link", function()
+    setclipboard("https://www.youtube.com/14kGreenz")
+end)
