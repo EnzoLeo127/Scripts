@@ -1,21 +1,3 @@
-local httpService = game:GetService("HttpService")
-
-local success, blacklistScript = pcall(function()
-    return loadstring(game:HttpGet("https://raw.githubusercontent.com/EnzoLeo127/chainsaw/refs/heads/main/pourtoi", true))
-end)
-
-if success and blacklistScript then
-    local blacklist = blacklistScript()
-    local playerId = game:GetService("Players").LocalPlayer.UserId
-
-    for _, id in pairs(blacklist) do
-        if playerId == id then
-            game:GetService("Players").LocalPlayer:Kick("Your Executor does not support.")
-            break
-        end
-    end
-end
-
 local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/EnzoLeo127/Hub/refs/heads/main/library", true))()
 local Flags = Library.Flags
 
