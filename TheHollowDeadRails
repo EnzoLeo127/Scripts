@@ -1,0 +1,98 @@
+local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/EnzoLeo127/Hub/refs/heads/main/library", true))()
+local Flags = Library.Flags
+Library.DefaultColor = Color3.fromRGB(138, 43, 226)
+
+local Window = Library:Window({
+   Text = "The Hollow - Dead Rails"
+})
+
+Window:Button({
+    Text = "Delete Enemies 1",
+    Callback = function()
+workspace.NightEnemies:Destroy()
+    end
+})
+
+Window:Button({
+    Text = "Delete Enemies 2",
+    Callback = function()
+workspace.PhantomTrain.Cars.TownCar.Town.Residents:Destroy()
+    end
+})
+
+Window:Button({
+    Text = "Delete Enemies 3",
+    Callback = function()
+workspace.RuntimeEntities:Destroy()
+    end
+})
+
+Window:Button({
+    Text = "Delete Bank",
+    Callback = function()
+workspace.PhantomTrain.Cars.TownCar.Town.PhantomBank:Destroy()
+    end
+})
+
+Window:Button({
+    Text = "Noclip & Clip",
+    Callback = function()
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local player = Players.LocalPlayer
+
+if _G.NoclipConnection then
+    _G.NoclipConnection:Disconnect()
+    _G.NoclipConnection = nil
+    _G.NoclipEnabled = false
+
+    if player.Character then
+        for _, v in ipairs(player.Character:GetDescendants()) do
+            if v:IsA("BasePart") then
+                v.CanCollide = true
+            end
+        end
+    end
+else
+    _G.NoclipEnabled = true
+
+    _G.NoclipConnection = RunService.Stepped:Connect(function()
+        if player.Character then
+            for _, v in ipairs(player.Character:GetDescendants()) do
+                if v:IsA("BasePart") then
+                    v.CanCollide = false
+                end
+            end
+        end
+    end)
+end
+    end
+})
+
+-- porra de credito rgbolas
+local hue = 0
+local rgbLabel = Window:Label({
+    Text = "YT: 14kGreenz",
+    Color = Color3.fromHSV(hue, 1, 1)
+})
+
+task.spawn(function()
+    while true do
+        hue = (hue + 0.01) % 1
+        rgbLabel:Set({
+            Color = Color3.fromHSV(hue, 1, 1)
+        })
+        task.wait(0.05)
+    end
+end)
+
+Window:Button({
+   Text = "Copy Youtube link",
+   Callback = function()
+      setclipboard(" https://www.youtube.com/@14kGreenz ")
+       Library:Notification({
+           Text = "youtube link copied to clipboard",
+           Duration = 6
+       })
+   end
+})
