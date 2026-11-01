@@ -67,53 +67,245 @@ Window6:Button({
 Window:Button({
     Text = "Complete Floor 1",
     Callback = function()
-local Players = game:GetService("Players")
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local player = Players.LocalPlayer
+local a = game:GetService("Players")
+local b = game:GetService("CollectionService")
+local c = game:GetService("ReplicatedStorage")
+local d = workspace
+local e = a.LocalPlayer
+local f = fireclickdetector or (getgenv and getgenv().fireclickdetector)
 
-local function teleport(position)
-    local character = player.Character
-    local hrp = character and character:FindFirstChild("HumanoidRootPart")
+assert(f, "fireclickdetector unsupported")
 
-    if hrp then
-        hrp.AssemblyLinearVelocity = Vector3.zero
-        hrp.CFrame = CFrame.new(position)
-    end
-end
+local g = c:WaitForChild("Remotes"):WaitForChild("MazePathCollect")
 
-local remote = ReplicatedStorage:WaitForChild("Remotes"):WaitForChild("MazePathCollect")
-
--- Coletar MazeTiles
-for i = 1, 50 do
+for h = 1, 50 do
     pcall(function()
-        remote:InvokeServer(i)
+        g:InvokeServer(h)
     end)
 end
 
 task.wait(2)
 
--- Encontrar a porta do Forcefield
-local door
+local function i()
+    local j = e.Character
+    return j and j:FindFirstChild("HumanoidRootPart")
+end
 
-for _, model in workspace:GetChildren() do
-    if model:IsA("Model") then
-        for _, obj in model:GetChildren() do
-            if obj.Name:find("^GR_Doors") and obj:FindFirstChild("Forcefield") then
-                door = obj
-                break
+local function k(j)
+    local l = i()
+    if l then
+        l.AssemblyLinearVelocity = Vector3.zero
+        l.CFrame = CFrame.new(j)
+    end
+end
+
+local function m(j, l)
+    return (j - l).Magnitude
+end
+
+local function n()
+    for _, j in d:GetChildren() do
+        if j:IsA("Model") then
+            for _, l in j:GetChildren() do
+                if l.Name:find("^GR_Doors") and l:FindFirstChild("Forcefield") then
+                    return l
+                end
+            end
+        end
+    end
+end
+
+local o = n()
+assert(o, "Door not found")
+
+k(o.Forcefield:GetPivot().Position + Vector3.new(0, 4, 0))
+task.wait(1)
+
+local p = o:WaitForChild("MazeLock", 10)
+local q = p and p:FindFirstChild("Board", true)
+assert(q, "Board not found")
+
+local function r()
+    local j = q.Position + q.CFrame.LookVector * 8
+    return Vector3.new(j.X, q.Position.Y - q.Size.Y / 2 + 3, j.Z)
+end
+
+k(r())
+
+local s = d:WaitForChild("MazeDoorFixtures", 15)
+assert(s, "Fixtures not found")
+
+task.wait(1.5)
+
+local function t()
+    local j = {}
+    for _, l in d:GetChildren() do
+        if l.Name == "MazeTile" and l:IsA("Model") then
+            local u = l:FindFirstChild("Base")
+            if u then
+                local v = u:FindFirstChildOfClass("PointLight")
+                local w = u:FindFirstChildOfClass("ClickDetector")
+                if v and not w and m(u.Position, q.Position) > 25 then
+                    j[#j + 1] = u
+                end
+            end
+        end
+    end
+    return j
+end
+
+for x = 1, 10 do
+    local j = t()
+    if #j == 0 then break end
+
+    for _, l in j do
+        k(l.Position + Vector3.new(0, 2, 0))
+        task.wait(1.2)
+    end
+
+    k(r())
+    task.wait(3)
+end
+
+local y = os.clock()
+while s.Parent and s:FindFirstChild("Socket") and os.clock() - y < 20 do
+    task.wait(0.5)
+end
+
+task.wait(1.5)
+
+local z = {
+    {bit = 1, dc = 0, dr = -1, back = 4},
+    {bit = 2, dc = 1, dr = 0, back = 8},
+    {bit = 4, dc = 0, dr = 1, back = 1},
+    {bit = 8, dc = -1, dr = 0, back = 2},
+}
+
+local function A(j, l)
+    for _ = 1, l % 4 do
+        j = (j * 2) % 16 + (j >= 8 and 1 or 0)
+    end
+    return j
+end
+
+local function B()
+    local j = {}
+    for _, l in d:GetChildren() do
+        if l.Name == "MazeTile" and l:IsA("Model") then
+            local u = l:FindFirstChild("Base")
+            local v = u and u:FindFirstChildOfClass("ClickDetector")
+
+            if v and m(u.Position, q.Position) < 15 then
+                j[#j + 1] = {cd = v, mask = 0, base = u}
+                for _, w in l:GetChildren() do
+                    if w.Name == "Arm" then
+                        local x = q.CFrame:VectorToObjectSpace(w.Position - u.Position)
+                        local y
+                        if math.abs(x.Y) > math.abs(x.X) then
+                            y = x.Y > 0 and 1 or 4
+                        else
+                            y = x.X > 0 and 8 or 2
+                        end
+                        j[#j].mask = bit32.bor(j[#j].mask, y)
+                    end
+                end
             end
         end
     end
 
-    if door then
-        break
+    local n = math.round(math.sqrt(#j))
+    local cf, sz = q.CFrame, q.Size
+    local pitch = sz.X / n
+    local cells = {}
+
+    for _, l in j do
+        local u = cf:PointToObjectSpace(l.base.Position)
+        local v = math.round((sz.X / 2 - u.X) / pitch - 0.5)
+        local w = math.round((sz.Y / 2 - u.Y) / pitch - 0.5)
+        cells[w * n + v + 1] = l
+    end
+
+    local function C(l)
+        local u = cf:PointToObjectSpace(l.Position)
+        return math.round((sz.Y / 2 - u.Y) / pitch - 0.5)
+    end
+
+    local src, snk = s:FindFirstChild("Source"), s:FindFirstChild("Sink")
+    if not (src and snk) or n == 0 then return end
+
+    return cells, n, C(src) * n + 1, C(snk) * n + n
+end
+
+local function D(j, l, u, v)
+    local w, x = {}, {}
+
+    local function E(y, z)
+        x[y] = true
+
+        for A = 0, 3 do
+            local B = A(j[y].mask, A)
+            if bit32.band(B, z) ~= 0 then
+                if y == v and bit32.band(B, 2) ~= 0 then
+                    w[y] = A
+                    return true
+                end
+
+                for _, C in ipairs(z) do
+                    if C.bit ~= z and bit32.band(B, C.bit) ~= 0 then
+                        local D = (y - 1) % l + C.dc
+                        local F = (y - 1) // l + C.dr
+
+                        if D >= 0 and D < l and F >= 0 and F < l then
+                            local G = F * l + D + 1
+                            if j[G] and not x[G] and E(G, C.back) then
+                                w[y] = A
+                                return true
+                            end
+                        end
+                    end
+                end
+            end
+        end
+
+        x[y] = nil
+        return false
+    end
+
+    if j[u] and E(u, 8) then return w end
+end
+
+for H = 1, 3 do
+    local j, l, u, v = B()
+    if not j then break end
+
+    local w = D(j, l, u, v)
+    if not w then break end
+
+    for x, y in w do
+        for _ = 1, y do
+            f(j[x].cd)
+            task.wait(0.15)
+        end
+    end
+
+    task.wait(2.5)
+    if not j[u].cd.Parent or j[u].cd.MaxActivationDistance == 0 then
+        return
     end
 end
 
-assert(door, "Door not found")
+task.wait(1)
 
--- Teleportar até a porta
-teleport(door.Forcefield:GetPivot().Position + Vector3.new(0, 4, 0))
+for _, a in workspace:GetChildren() do
+    if a:IsA("Model") then
+        for _, b in a:GetChildren() do
+            if b.Name:find("^EL_Theater") and b:FindFirstChild("Forcefield") then
+                k(b.Forcefield:GetPivot().Position + Vector3.new(0, 4, 0))
+                return
+            end
+        end
+    end
+end
     end
 })
 
