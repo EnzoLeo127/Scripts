@@ -1,0 +1,1240 @@
+local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/EnzoLeo127/Hub/refs/heads/main/library", true))()
+Library.DefaultColor = Color3.fromRGB(138, 43, 226)
+
+local Window6 = Library:Window({Text = "Floor 6"})
+local Window = Library:Window({Text = "The Hollow - Floors"})
+local Player = game.Players.LocalPlayer
+
+local function GetHospital()
+    for _, v in ipairs(workspace:GetDescendants()) do
+        if v.Name:match("^GR_AnimalHospital_%d+_%-3$") then
+            return v
+        end
+    end
+end
+
+local function Teleport(position)
+    local character = Player.Character or Player.CharacterAdded:Wait()
+    character:WaitForChild("HumanoidRootPart").CFrame = CFrame.new(position)
+end
+
+local function FindItem(color)
+    local hospital = GetHospital()
+    if not hospital then return end
+
+    local brew = hospital:FindFirstChild("WitchesBrew", true)
+    if not brew then return end
+
+    for _, v in ipairs(brew:GetDescendants()) do
+        local prompt = v:FindFirstChild("ProximityPrompt")
+        if v.Name == "BrewCube" and prompt and prompt.ObjectText == color then
+            Teleport(v.Position + Vector3.new(0, 3, 0))
+            return
+        end
+    end
+end
+
+Window6:Button({
+    Text = "Go To Hospital",
+    Callback = function()
+        local hospital = GetHospital()
+        local forcefield = hospital and hospital:FindFirstChild("Forcefield")
+        if forcefield then
+            Teleport(forcefield.Position + Vector3.new(0, 3, 0))
+        end
+    end
+})
+
+for _, color in ipairs({
+    "Orange", "Green", "Yellow", "Cyan",
+    "White", "Pink", "Red"
+}) do
+    Window6:Button({
+        Text = color .. " Item",
+        Callback = function()
+            FindItem(color)
+        end
+    })
+end
+
+Window6:Button({
+    Text = "Go To Elevator",
+    Callback = function()
+        Teleport(Vector3.new(284, 4, 12000))
+    end
+})
+
+Window:Button({
+    Text = "Complete Floor 1",
+    Callback = function()
+local a = game:GetService("Players")
+local b = game:GetService("CollectionService")
+local c = game:GetService("ReplicatedStorage")
+local d = workspace
+local e = a.LocalPlayer
+local f = fireclickdetector or (getgenv and getgenv().fireclickdetector)
+
+assert(f, "fireclickdetector unsupported")
+
+local g = c:WaitForChild("Remotes"):WaitForChild("MazePathCollect")
+
+for h = 1, 50 do
+    pcall(function()
+        g:InvokeServer(h)
+    end)
+end
+
+task.wait(2)
+
+local function i()
+    local j = e.Character
+    return j and j:FindFirstChild("HumanoidRootPart")
+end
+
+local function k(j)
+    local l = i()
+    if l then
+        l.AssemblyLinearVelocity = Vector3.zero
+        l.CFrame = CFrame.new(j)
+    end
+end
+
+local function m(j, l)
+    return (j - l).Magnitude
+end
+
+local function n()
+    for _, j in d:GetChildren() do
+        if j:IsA("Model") then
+            for _, l in j:GetChildren() do
+                if l.Name:find("^GR_Doors") and l:FindFirstChild("Forcefield") then
+                    return l
+                end
+            end
+        end
+    end
+end
+
+local o = n()
+assert(o, "Door not found")
+
+k(o.Forcefield:GetPivot().Position + Vector3.new(0, 4, 0))
+task.wait(1)
+
+local p = o:WaitForChild("MazeLock", 10)
+local q = p and p:FindFirstChild("Board", true)
+assert(q, "Board not found")
+
+local function r()
+    local j = q.Position + q.CFrame.LookVector * 8
+    return Vector3.new(j.X, q.Position.Y - q.Size.Y / 2 + 3, j.Z)
+end
+
+k(r())
+
+local s = d:WaitForChild("MazeDoorFixtures", 15)
+assert(s, "Fixtures not found")
+
+task.wait(1.5)
+
+local function t()
+    local j = {}
+    for _, l in d:GetChildren() do
+        if l.Name == "MazeTile" and l:IsA("Model") then
+            local u = l:FindFirstChild("Base")
+            if u then
+                local v = u:FindFirstChildOfClass("PointLight")
+                local w = u:FindFirstChildOfClass("ClickDetector")
+                if v and not w and m(u.Position, q.Position) > 25 then
+                    j[#j + 1] = u
+                end
+            end
+        end
+    end
+    return j
+end
+
+for x = 1, 10 do
+    local j = t()
+    if #j == 0 then break end
+
+    for _, l in j do
+        k(l.Position + Vector3.new(0, 2, 0))
+        task.wait(1.2)
+    end
+
+    k(r())
+    task.wait(3)
+end
+
+local y = os.clock()
+while s.Parent and s:FindFirstChild("Socket") and os.clock() - y < 20 do
+    task.wait(0.5)
+end
+
+task.wait(1.5)
+
+local z = {
+    {bit = 1, dc = 0, dr = -1, back = 4},
+    {bit = 2, dc = 1, dr = 0, back = 8},
+    {bit = 4, dc = 0, dr = 1, back = 1},
+    {bit = 8, dc = -1, dr = 0, back = 2},
+}
+
+local function A(j, l)
+    for _ = 1, l % 4 do
+        j = (j * 2) % 16 + (j >= 8 and 1 or 0)
+    end
+    return j
+end
+
+local function B()
+    local j = {}
+    for _, l in d:GetChildren() do
+        if l.Name == "MazeTile" and l:IsA("Model") then
+            local u = l:FindFirstChild("Base")
+            local v = u and u:FindFirstChildOfClass("ClickDetector")
+
+            if v and m(u.Position, q.Position) < 15 then
+                j[#j + 1] = {cd = v, mask = 0, base = u}
+                for _, w in l:GetChildren() do
+                    if w.Name == "Arm" then
+                        local x = q.CFrame:VectorToObjectSpace(w.Position - u.Position)
+                        local y
+                        if math.abs(x.Y) > math.abs(x.X) then
+                            y = x.Y > 0 and 1 or 4
+                        else
+                            y = x.X > 0 and 8 or 2
+                        end
+                        j[#j].mask = bit32.bor(j[#j].mask, y)
+                    end
+                end
+            end
+        end
+    end
+
+    local n = math.round(math.sqrt(#j))
+    local cf, sz = q.CFrame, q.Size
+    local pitch = sz.X / n
+    local cells = {}
+
+    for _, l in j do
+        local u = cf:PointToObjectSpace(l.base.Position)
+        local v = math.round((sz.X / 2 - u.X) / pitch - 0.5)
+        local w = math.round((sz.Y / 2 - u.Y) / pitch - 0.5)
+        cells[w * n + v + 1] = l
+    end
+
+    local function C(l)
+        local u = cf:PointToObjectSpace(l.Position)
+        return math.round((sz.Y / 2 - u.Y) / pitch - 0.5)
+    end
+
+    local src, snk = s:FindFirstChild("Source"), s:FindFirstChild("Sink")
+    if not (src and snk) or n == 0 then return end
+
+    return cells, n, C(src) * n + 1, C(snk) * n + n
+end
+
+local function D(j, l, u, v)
+    local w, x = {}, {}
+
+    local function E(y, z)
+        x[y] = true
+
+        for A = 0, 3 do
+            local B = A(j[y].mask, A)
+            if bit32.band(B, z) ~= 0 then
+                if y == v and bit32.band(B, 2) ~= 0 then
+                    w[y] = A
+                    return true
+                end
+
+                for _, C in ipairs(z) do
+                    if C.bit ~= z and bit32.band(B, C.bit) ~= 0 then
+                        local D = (y - 1) % l + C.dc
+                        local F = (y - 1) // l + C.dr
+
+                        if D >= 0 and D < l and F >= 0 and F < l then
+                            local G = F * l + D + 1
+                            if j[G] and not x[G] and E(G, C.back) then
+                                w[y] = A
+                                return true
+                            end
+                        end
+                    end
+                end
+            end
+        end
+
+        x[y] = nil
+        return false
+    end
+
+    if j[u] and E(u, 8) then return w end
+end
+
+for H = 1, 3 do
+    local j, l, u, v = B()
+    if not j then break end
+
+    local w = D(j, l, u, v)
+    if not w then break end
+
+    for x, y in w do
+        for _ = 1, y do
+            f(j[x].cd)
+            task.wait(0.15)
+        end
+    end
+
+    task.wait(2.5)
+    if not j[u].cd.Parent or j[u].cd.MaxActivationDistance == 0 then
+        return
+    end
+end
+
+task.wait(1)
+
+for _, a in workspace:GetChildren() do
+    if a:IsA("Model") then
+        for _, b in a:GetChildren() do
+            if b.Name:find("^EL_Theater") and b:FindFirstChild("Forcefield") then
+                k(b.Forcefield:GetPivot().Position + Vector3.new(0, 4, 0))
+                return
+            end
+        end
+    end
+end
+    end
+})
+
+Window:Button({
+    Text = "Complete Floor 2",
+    Callback = function()
+local a=game:GetService("Players")
+local b=a.LocalPlayer
+local c=11
+local d=1.8
+local e=3.5
+local f=6
+
+local function g(m)error(m,0)end
+
+local function h(p)
+for _,q in ipairs(workspace:GetChildren())do
+if q.Name:sub(1,#p)==p then return q end
+end
+for _,q in ipairs(workspace:GetChildren())do
+for _,r in ipairs(q:GetChildren())do
+if r.Name:sub(1,#p)==p then return r end
+end
+end
+end
+
+local function i(x)
+if x:IsA("BasePart")then return x.CFrame end
+if x:IsA("Model")then return x:GetPivot()end
+local y=x:FindFirstChildWhichIsA("BasePart",true)
+return y and y.CFrame
+end
+
+local function j(x)
+local y=b.Character
+if not y then g("")end
+local z=i(x)
+if not z then g("")end
+y:PivotTo(z+Vector3.new(0,3,0))
+task.wait(0.15)
+end
+
+local function k(x)return(x-2)%f+1 end
+local function l(x)return x%f+1 end
+
+local function M()
+local t=h("GR_DW")or g("")
+local u=t:FindFirstChild("Forcefield")or g("")
+j(u)
+task.wait(0.5)
+local v=t:WaitForChild("ThreePillars",5)
+v=v and v:WaitForChild("ThreePillars",5)or g("")
+local w,x,y={},{},{}
+for z=1,f do
+local A=v:FindFirstChild("Pillar"..z)or g("")
+w[z]=A
+y[z]=A:FindFirstChild("SurfaceAppearance")or g("")
+local B=A:FindFirstChild("Prompt")
+x[z]=B and B:FindFirstChild("ProximityPrompt")or g("")
+end
+
+local function m(z)return y[z].EmissiveStrength>e end
+local function n()
+local A={}
+for z=1,f do A[z]=m(z)end
+return A
+end
+local function o(z)
+j(w[z])
+fireproximityprompt(x[z])
+task.wait(d)
+end
+local function p(A)return table.concat(A,",")end
+
+local C,D,E,F={},{},{},{}
+for G=0,4^f-1 do
+local H,I,J={},G,0
+for K=1,f do
+H[K]=I%4
+I=I//4
+J+=H[K]
+end
+local L={}
+for K=1,f do L[K]=(H[k(K)]+H[K]+H[l(K)])%4 end
+local N=p(L)
+if not F[N]then
+F[N]=true
+E[#E+1]=L
+end
+if not C[N]or J<C[N]then
+C[N]=J
+D[N]=H
+end
+end
+
+local function q(A,B)
+local U=table.clone(A)
+for _,V in ipairs({k(B),B,l(B)})do U[V]=(U[V]-1)%4 end
+return U
+end
+local function r(A,B)
+for z=1,f do
+if(A[z]==0)~=B[z]then return false end
+end
+return true
+end
+local function s(A)
+for z=1,f do
+if not A[z]then return false end
+end
+return true
+end
+
+local O=n()
+local P={}
+for _,z in ipairs(E)do
+if r(z,O)then P[#P+1]=table.clone(z)end
+end
+
+local Q=0
+while not s(O)do
+if #P==0 or Q>=c then g("")end
+local R
+if #P==1 then
+local z=D[p(P[1])]
+for A=1,f do
+if z[A]>0 then
+R=A
+break
+end
+end
+if not R then g("")end
+else
+local S
+for A=1,f do
+local B=0
+for _,z in ipairs(P)do B+=C[p(q(z,A))]end
+if not S or B<S then
+S=B
+R=A
+end
+end
+end
+o(R)
+Q+=1
+O=n()
+local T={}
+for _,z in ipairs(P)do
+local A=q(z,R)
+if r(A,O)then T[#T+1]=A end
+end
+P=T
+print((c-Q).." turns left...")
+end
+print("solved.")
+
+task.wait(0.5)
+local W=v:FindFirstChild("LeverHandle")or g("")
+local X=W:FindFirstChild("Prompt")
+local Y=X and X:FindFirstChild("ProximityPrompt")or g("")
+j(W)
+fireproximityprompt(Y)
+task.wait(0.5)
+local Z=h("EL_TheaterEntrance")
+local a1=Z and Z:FindFirstChild("Forcefield")
+if a1 then j(a1)end
+end
+
+pcall(M)
+    end
+})
+
+Window:Button({
+    Text = "Complete Floor 3",
+    Callback = function()
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
+local playerGui = player:WaitForChild("PlayerGui")
+
+local function getHRP()
+    local character = player.Character or player.CharacterAdded:Wait()
+    return character:WaitForChild("HumanoidRootPart")
+end
+
+getHRP().CFrame = CFrame.new(-191, 4, 5762)
+
+task.wait(7)
+
+local map = {
+    ["THOMAS WREN"] = "SPIDER",
+    ["CLARA MOSS"] = "HAND",
+    ["NELL WICK"] = "WITCHHAT",
+    ["ADA FENN"] = "CAULDRON",
+    ["JOSIAH CRANE"] = "PUMPKIN",
+    ["RUTH PEMBER"] = "CAT",
+    ["IRA BOOTH"] = "BAT",
+    ["EDITH HARROW"] = "GHOST"
+}
+
+local function normalizeName(name)
+    return name:upper():match("^%s*(.-)%s*$"):gsub("%s+", " ")
+end
+
+local function getItem(name)
+    name = normalizeName(name)
+
+    if map[name] then
+        return map[name]
+    end
+
+    for mappedName, item in pairs(map) do
+        if name:find(mappedName, 1, true) then
+            return item
+        end
+    end
+
+    return "?"
+end
+
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "GraveResultsGUI"
+screenGui.ResetOnSpawn = false
+screenGui.IgnoreGuiInset = true
+screenGui.Parent = playerGui
+
+local message = Instance.new("TextLabel")
+message.Name = "Message"
+message.AnchorPoint = Vector2.new(0.5, 0.5)
+message.Position = UDim2.fromScale(0.5, 0.16)
+message.Size = UDim2.fromScale(0.85, 0.12)
+message.BackgroundColor3 = Color3.fromRGB(20, 20, 28)
+message.BackgroundTransparency = 0.15
+message.TextColor3 = Color3.fromRGB(255, 255, 255)
+message.TextScaled = true
+message.Font = Enum.Font.GothamBold
+message.TextWrapped = true
+message.Visible = false
+message.Parent = screenGui
+
+local messageCorner = Instance.new("UICorner")
+messageCorner.CornerRadius = UDim.new(0, 12)
+messageCorner.Parent = message
+
+local messageStroke = Instance.new("UIStroke")
+messageStroke.Color = Color3.fromRGB(155, 90, 255)
+messageStroke.Thickness = 2
+messageStroke.Parent = message
+
+local messagePadding = Instance.new("UIPadding")
+messagePadding.PaddingLeft = UDim.new(0, 10)
+messagePadding.PaddingRight = UDim.new(0, 10)
+messagePadding.PaddingTop = UDim.new(0, 5)
+messagePadding.PaddingBottom = UDim.new(0, 5)
+messagePadding.Parent = message
+
+local function showMessage(text, duration)
+    message.Text = text
+    message.Visible = true
+    task.wait(duration)
+    message.Visible = false
+end
+
+local folder
+
+for _, d in ipairs(workspace:GetDescendants()) do
+    if d.Name:find("^GR_Demon") then
+        local t = d:FindFirstChild("Tombstone")
+
+        if t then
+            folder = t
+            break
+        end
+    end
+end
+
+assert(folder, "GR_Demon/Tombstone not found")
+
+local graves = {}
+
+for _, g in ipairs(folder:GetChildren()) do
+    if g.Name:match("^Gravestone%d+$") then
+        table.insert(graves, g)
+    end
+end
+
+table.sort(graves, function(a, b)
+    return tonumber(a.Name:match("%d+")) < tonumber(b.Name:match("%d+"))
+end)
+
+local function teleportTo(g)
+    if not g.Parent then
+        return
+    end
+
+    local character = player.Character or player.CharacterAdded:Wait()
+    local hrp = character:WaitForChild("HumanoidRootPart")
+
+    hrp.CFrame = g:GetPivot() + Vector3.new(0, 4, 0)
+end
+
+showMessage("Investigating the 8 gravestones...", 2)
+
+for _, g in ipairs(graves) do
+    teleportTo(g)
+    task.wait(5)
+end
+
+local res = {}
+
+for _, g in ipairs(graves) do
+    local plate = g:FindFirstChild("EpitaphPlate")
+        or g:WaitForChild("EpitaphPlate", 10)
+
+    if plate then
+        local epitaph = plate:FindFirstChild("Epitaph")
+        local card = epitaph and epitaph:FindFirstChild("Card")
+
+        if card then
+            local nameLbl = card:FindFirstChild("Name")
+            local dates = card:FindFirstChild("Dates")
+
+            if nameLbl and dates then
+                local n = normalizeName(nameLbl.Text)
+                local a, b = dates.Text:match("(%d+)%D+(%d+)")
+
+                a, b = tonumber(a), tonumber(b)
+
+                if a and b then
+                    table.insert(res, {
+                        id = g.Name,
+                        grave = g,
+                        name = n,
+                        item = getItem(n),
+                        text = dates.Text,
+                        born = a,
+                        died = b,
+                        age = b - a
+                    })
+                end
+            end
+        end
+    end
+end
+
+table.sort(res, function(x, y)
+    if x.age ~= y.age then
+        return x.age < y.age
+    end
+
+    return x.born > y.born
+end)
+
+_G.GraveDates = res
+
+for i = 1, math.min(3, #res) do
+    local r = res[i]
+    print(i, r.id, r.item, r.text, r.age .. "y")
+end
+
+showMessage("Investigation complete! The 3 figures have been found!", 3)
+
+local function addNumber(g, number)
+    local part
+
+    if g:IsA("BasePart") then
+        part = g
+    else
+        part = g.PrimaryPart or g:FindFirstChildWhichIsA("BasePart", true)
+    end
+
+    if not part then
+        return
+    end
+
+    local billboard = Instance.new("BillboardGui")
+    billboard.Name = "GraveRank_" .. number
+    billboard.Adornee = part
+    billboard.Size = UDim2.fromOffset(100, 100)
+    billboard.StudsOffsetWorldSpace = Vector3.new(0, 5, 0)
+    billboard.AlwaysOnTop = true
+    billboard.MaxDistance = 500
+    billboard.Parent = playerGui
+
+    local label = Instance.new("TextLabel")
+    label.Size = UDim2.fromScale(1, 1)
+    label.BackgroundColor3 = Color3.fromRGB(25, 20, 35)
+    label.BackgroundTransparency = 0.15
+    label.Text = tostring(number)
+    label.TextColor3 = Color3.fromRGB(255, 255, 255)
+    label.TextScaled = true
+    label.Font = Enum.Font.GothamBlack
+    label.Parent = billboard
+
+    local corner = Instance.new("UICorner")
+    corner.CornerRadius = UDim.new(1, 0)
+    corner.Parent = label
+
+    local stroke = Instance.new("UIStroke")
+    stroke.Color = Color3.fromRGB(155, 90, 255)
+    stroke.Thickness = 4
+    stroke.Parent = label
+end
+
+for i = 1, math.min(3, #res) do
+    local r = res[i]
+
+    showMessage("Figure #" .. i .. " found: " .. r.item, 2)
+
+    teleportTo(r.grave)
+    task.wait(5)
+end
+
+for i = 1, math.min(3, #res) do
+    addNumber(res[i].grave, i)
+end
+
+showMessage("All 3 figures have been found!", 4)
+
+task.wait(20)
+
+getHRP().CFrame = CFrame.new(284, 4, 6000)
+    end
+})
+
+Window:Button({
+    Text = "Complete Floor 5",
+    Callback = function()
+local a=game:GetService("Players")
+local b=game:GetService("ReplicatedStorage")
+local c=a.LocalPlayer
+local d={Mirror1=1,Mirror2=5,Mirror3=3,Mirror4=7,Mirror5=1,Mirror6=5,Mirror7=5,Mirror8=7,Path1=1,Path2=3,Path3=3,Path4=5,Path5=1}
+local e="Mirror10"
+local f=b:WaitForChild("Remotes"):WaitForChild("LightMirrorState")
+local function g(h)
+local i=c.Character or c.CharacterAdded:Wait()
+i:WaitForChild("HumanoidRootPart").CFrame=h
+end
+pcall(function()c:RequestStreamAroundAsync(Vector3.new(15,35,9700),5)end)
+local function j(k)
+local l=os.clock()
+repeat
+local m=workspace:FindFirstChild("LightPuzzle",true)
+local n=m and m:FindFirstChild("Mirrors")
+local o=n and n:FindFirstChild("Mirror1")
+local p=o and o:FindFirstChild("MirrorPrompt")
+if p and p:FindFirstChild("ProximityPrompt")then return n end
+task.wait(0.25)
+until os.clock()-l>k
+end
+local q=j(20)
+if not q then return end
+local r={}
+for _,s in ipairs(q:GetChildren())do
+if s:IsA("BasePart")then table.insert(r,s.Name)end
+end
+table.sort(r,function(t,u)return t<u end)
+local v={}
+for w,x in ipairs(r)do v[x]=w end
+local y={}
+if workspace:GetAttribute("HardMode")==true then
+for _,z in ipairs(r)do
+local aa=q[z]:GetAttribute("Linked")
+if typeof(aa)=="string"then
+for _,ab in ipairs(string.split(aa,","))do
+if ab~=z and v[ab]then
+y[ab]=y[ab]or{}
+table.insert(y[ab],z)
+end
+end
+end
+end
+end
+local function ac()
+local ad,ae=pcall(function()return f:InvokeServer()end)
+if ad and typeof(ae)=="table"and typeof(ae.Turns)=="table"then return ae end
+end
+local function af(ag)
+local ah,ai={},{}
+local function aj(ak)
+if ah[ak]~=nil then return ah[ak]end
+if d[ak]==nil or ai[ak]then return 0 end
+ai[ak]=true
+local al=d[ak]-(ag[v[ak]]or 0)
+for _,am in ipairs(y[ak]or{})do al-=aj(am)end
+ai[ak]=nil
+ah[ak]=al%8
+return ah[ak]
+end
+local an={}
+for _,ao in ipairs(r)do an[ao]=aj(ao)end
+return an
+end
+local function ap(aq)
+for ar,at in pairs(d)do
+if((aq[v[ar]]or 0)-at)%8~=0 then return false end
+end
+return true
+end
+local function au(av)
+if fireproximityprompt then
+fireproximityprompt(av)
+else
+av:InputHoldBegin()
+task.wait()
+av:InputHoldEnd()
+end
+end
+for _=1,5 do
+local ax=ac()
+if not ax then break end
+if ax.Solved then break end
+if ap(ax.Turns)then break end
+local ay=af(ax.Turns)
+for _,az in ipairs(r)do
+local ba=ay[az]
+if d[az]and ba>0 then
+local bb=q[az]
+local bc=bb.MirrorPrompt.ProximityPrompt
+g(bb.CFrame+Vector3.new(0,3,0))
+task.wait(0.25)
+for _=1,ba do
+au(bc)
+task.wait(0.25)
+end
+end
+end
+task.wait(0.6)
+end
+local bd=q:FindFirstChild(e)
+if bd then g(bd.CFrame+Vector3.new(0,3,0))end
+local be=os.clock()
+local bf=false
+repeat
+task.wait(0.5)
+local bg=ac()
+bf=bg and bg.Solved
+until bf or os.clock()-be>12
+task.wait(10)
+for _,bh in workspace:GetChildren()do
+if bh:IsA("Model")then
+for _,bi in bh:GetChildren()do
+if bi.Name:find("^EL_Theater")and bi:FindFirstChild("Forcefield")then
+g(CFrame.new(bi.Forcefield:GetPivot().Position+Vector3.new(0,4,0)))
+return
+end
+end
+end
+end
+    end
+})
+
+Window:Button({
+    Text = "Complete Floor 7",
+    Callback = function()
+local player = game.Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+local hrp = character:WaitForChild("HumanoidRootPart")
+
+for _, v in ipairs(workspace:GetDescendants()) do
+    if v.Name:match("^GR_Shawarma_%-?%d+_%-3$") then
+        local f = v:FindFirstChild("Forcefield")
+
+        if f then
+            hrp.CFrame = f.CFrame + Vector3.new(0, 3, 0)
+            break
+        end
+    end
+end
+
+task.wait(7)
+
+local pumpkins = {}
+
+for _, obj in ipairs(workspace:GetDescendants()) do
+    if obj:IsA("MeshPart")
+    and (obj.Name == "Pumpkin" or obj.Name == "Pumpkins")
+    and obj.Transparency == 0 then
+        table.insert(pumpkins, obj)
+    end
+end
+
+for _, pumpkin in ipairs(pumpkins) do
+    character = player.Character or player.CharacterAdded:Wait()
+    hrp = character:WaitForChild("HumanoidRootPart")
+
+    if pumpkin.Parent then
+        hrp.CFrame = pumpkin.CFrame + Vector3.new(0, 3, 0)
+        task.wait(3)
+    end
+end
+
+task.wait(5)
+
+character = player.Character or player.CharacterAdded:Wait()
+hrp = character:WaitForChild("HumanoidRootPart")
+
+hrp.CFrame = CFrame.new(284, 4, 14000)
+    end
+})
+
+Window:Button({
+    Text = "Complete Floor 8",
+    Callback = function()
+local a=game:GetService("Players")
+local b=game:GetService("ReplicatedStorage")
+local c=a.LocalPlayer
+local d=b:WaitForChild("Remotes"):WaitForChild("OfferingsTake")
+local e={OfferingBell="Bell",OfferingCandle="Candle",OfferingLantern="Lantern",OfferingPotion="Potion",OfferingSkull="Skull"}
+local f=Vector3.new(2.5,0,0)
+local g=1.2
+local h=true
+
+local function i()
+	return c.Character or c.CharacterAdded:Wait()
+end
+
+local function j()
+	return i():WaitForChild("HumanoidRootPart")
+end
+
+local k
+local function l()
+	if k then return end
+	k=Instance.new("Part")
+	k.Anchored=true
+	k.Size=Vector3.new(8,1,8)
+	k.Transparency=1
+	k.CanCollide=true
+	k.Parent=workspace
+end
+
+local function m(z)
+	if k then
+		k.CFrame=CFrame.new(z.Position-Vector3.new(0,3.5,0))
+	end
+end
+
+local function n()
+	if k then
+		k:Destroy()
+		k=nil
+	end
+end
+
+local function o(aa)
+	return Vector3.new(aa.X,0,aa.Z)
+end
+
+local function p(ab)
+	local ac=j()
+	ac.AssemblyLinearVelocity=Vector3.zero
+	ac.CFrame=CFrame.new(ab+f)
+	l()
+	m(ac)
+end
+
+local function q()
+	for ad,ae in ipairs(workspace:GetDescendants()) do
+		if ae.Name=="OfferingAltar" and ae:FindFirstChild("Coaster") then
+			return ae
+		end
+	end
+end
+
+local function r(af)
+	local ag={}
+	for ah,ai in ipairs(workspace:GetDescendants()) do
+		if ai.Name==af and ai:IsA("Model") then
+			ag[#ag+1]=ai
+		end
+	end
+	return ag
+end
+
+local function s(aj,ak)
+	local al=math.huge
+	for am,an in ipairs(aj:GetDescendants()) do
+		if an:IsA("BasePart") then
+			al=math.min(al,(o(an.Position)-o(ak)).Magnitude)
+		end
+	end
+	return al
+end
+
+local function t(ao)
+	local ap,aq
+	for ar in pairs(e) do
+		for at,au in ipairs(r(ar)) do
+			local av=s(au,ao.Position)
+			if av<=g and (not aq or av<aq) then
+				ap,aq=au,av
+			end
+		end
+	end
+	return ap
+end
+
+local function u(aw,ax)
+	for ay,az in ipairs(ax) do
+		if s(aw,az.Position)<=g then
+			return true
+		end
+	end
+	return false
+end
+
+local function v(ba)
+	local bb={}
+	for bc,bd in ipairs(ba:GetDescendants()) do
+		if bd:IsA("BasePart") then
+			bb[bd]=bd.CFrame
+		end
+	end
+	return bb
+end
+
+local function w(be)
+	if #be==0 then return end
+	if #be==1 then return be[1] end
+	local bf={}
+	for bg,bh in ipairs(be) do
+		bf[bh]=v(bh)
+	end
+	task.wait(0.3)
+	for bi,bj in ipairs(be) do
+		for bk,bl in pairs(bf[bj]) do
+			if bk.Parent then
+				local bm=bk.CFrame
+				if (bm.LookVector-bl.LookVector).Magnitude>0.01 or (bm.UpVector-bl.UpVector).Magnitude>0.01 then
+					return bj
+				end
+			end
+		end
+	end
+	for bn,bo in ipairs(be) do
+		for bp in pairs(bf[bo]) do
+			if bp.Transparency>0.1 then
+				return bo
+			end
+		end
+	end
+	return be[1]
+end
+
+local x=q()
+assert(x,"OfferingAltar não achado")
+
+local y={}
+for bq,br in ipairs(x:GetChildren()) do
+	if br.Name=="Coaster" and br:IsA("BasePart") then
+		y[#y+1]=br
+	end
+end
+table.sort(y,function(bs,bt)
+	return bs.Position.Z<bt.Position.Z
+end)
+
+for bu,bv in ipairs(y) do
+	local bw=t(bv)
+	if not bw then
+		print("[C"..bu.."] vazio")
+		continue
+	end
+	local bx=bw.Name
+	local by=#r(bx)
+	print("[C"..bu.."]",bx,"count="..by)
+	if by<=1 then
+		continue
+	end
+
+	p(bv.Position)
+	task.wait(0.3)
+
+	if h then
+		local bz=bv:FindFirstChildWhichIsA("ProximityPrompt")
+		if bz then
+			bz.HoldDuration=0
+			bz.RequiresLineOfSight=false
+			bz.MaxActivationDistance=math.max(bz.MaxActivationDistance,20)
+			fireproximityprompt(bz)
+			task.wait(0.3)
+		else
+			warn("[C"..bu.."] sem ProximityPrompt")
+		end
+	end
+
+	task.spawn(function()
+		pcall(function()
+			d:InvokeServer(e[bx])
+		end)
+	end)
+	task.wait(0.5)
+
+	local ca
+	local cb=tick()
+	while tick()-cb<5 and not ca do
+		local cc={}
+		for cd,ce in ipairs(r(bx)) do
+			if ce~=bw and not u(ce,y) then
+				cc[#cc+1]=ce
+			end
+		end
+		ca=w(cc)
+		task.wait(0.1)
+	end
+
+	if not ca then
+		warn("[C"..bu.."] alvo girando NÃO achado:",bx)
+		n()
+		continue
+	end
+	print("[C"..bu.."] alvo:",ca:GetFullName())
+
+	p(ca:GetPivot().Position)
+
+	cb=tick()
+	while tick()-cb<8 and #r(bx)>1 do
+		if ca.Parent then
+			p(ca:GetPivot().Position)
+		end
+		task.wait(0.05)
+	end
+	print("[C"..bu.."] fim, count="..#r(bx))
+	n()
+end
+
+n()
+print("done")
+
+task.wait(1)
+
+for cf,cg in ipairs(workspace:GetChildren()) do
+	if cg:IsA("Model") then
+		for ch,ci in ipairs(cg:GetChildren()) do
+			if ci.Name:find("^EL_Theater") and ci:FindFirstChild("Forcefield") then
+				p(ci.Forcefield:GetPivot().Position+Vector3.new(0,4,0))
+				return
+			end
+		end
+	end
+end
+    end
+})
+
+Window:Button({
+    Text = "Complete Floor 9",
+    Callback = function()
+local player = game:GetService("Players").LocalPlayer
+
+local function getImage(obj, path)
+    for _, name in ipairs(path) do
+        obj = obj and obj:FindFirstChild(name)
+    end
+    return obj and obj:IsA("ImageLabel") and obj.Image
+end
+
+local function normalize(id)
+    return id and id:match("%d+") or nil
+end
+
+local function getRoot()
+    return (player.Character or player.CharacterAdded:Wait()):WaitForChild("HumanoidRootPart")
+end
+
+for i = 1, 5 do
+    local wall
+
+    for _, obj in ipairs(workspace:GetDescendants()) do
+        if obj.Name == "Wall" .. i and obj:IsA("BasePart") then
+            wall = obj
+            break
+        end
+    end
+
+    local wallImage = wall and getImage(wall, {"LeverWallIcon", "ImageLabel"})
+
+    if wallImage then
+        local targetId = normalize(wallImage)
+        local found
+
+        for _, obj in ipairs(workspace:GetDescendants()) do
+            if obj.Name == "PuzzleLever" and obj:IsA("Model") then
+                local image = getImage(obj, {"IconFront", "SurfaceGui", "ImageLabel"})
+
+                if normalize(image) == targetId then
+                    found = obj
+                    break
+                end
+            end
+        end
+
+        if found then
+            getRoot().CFrame = found:GetPivot() + Vector3.new(0, 3, 0)
+            task.wait(3)
+        end
+    end
+end
+
+task.wait(3)
+
+local relic
+
+repeat
+    for _, obj in ipairs(workspace:GetDescendants()) do
+        if obj.Name == "RelicPedestal" and (obj:IsA("BasePart") or obj:IsA("Model")) then
+            relic = obj
+            break
+        end
+    end
+    if not relic then
+        task.wait(1)
+    end
+until relic
+
+getRoot().CFrame = (relic:IsA("Model") and relic:GetPivot() or relic.CFrame) + Vector3.new(0, 3, 0)
+
+task.wait(5)
+
+getRoot().CFrame = CFrame.new(277, 4, 17998)
+    end
+})
+
+Window:Button({
+    Text = "Copy Youtube link",
+    Callback = function()
+        setclipboard("https://www.youtube.com/@14kGreenz")
+        Library:Notification({
+            Text = "youtube link copied to clipboard",
+            Duration = 6
+        })
+    end
+})
