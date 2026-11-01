@@ -1,8 +1,9 @@
 local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/EnzoLeo127/Hub/refs/heads/main/library", true))()
 Library.DefaultColor = Color3.fromRGB(138, 43, 226)
 
-local Window6 = Library:Window({Text = "Floor 6"})
 local Window = Library:Window({Text = "The Hollow - Floors"})
+local Window6 = Library:Window({Text = "Floor 6"})
+local Window7 = Library:Window({Text = "Floor 1 and 10"})
 local Player = game.Players.LocalPlayer
 
 local function GetHospital()
@@ -64,7 +65,7 @@ Window6:Button({
     end
 })
 
-Window:Button({
+Window7:Button({
     Text = "Complete Floor 1",
     Callback = function()
 local a = game:GetService("Players")
@@ -1225,6 +1226,17 @@ getRoot().CFrame = (relic:IsA("Model") and relic:GetPivot() or relic.CFrame) + V
 task.wait(5)
 
 getRoot().CFrame = CFrame.new(277, 4, 17998)
+    end
+})
+
+Window7:Button({
+    Text = "Go To Elevator",
+    Callback = function()
+local player = game.Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+local hrp = character:WaitForChild("HumanoidRootPart")
+
+hrp.CFrame = CFrame.new(284, 4, 2000)
     end
 })
 
