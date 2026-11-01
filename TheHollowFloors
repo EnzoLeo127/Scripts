@@ -2,8 +2,8 @@ local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/EnzoL
 Library.DefaultColor = Color3.fromRGB(138, 43, 226)
 
 local Window = Library:Window({Text = "The Hollow - Floors"})
-local Window6 = Library:Window({Text = "Floor 6"})
-local Window7 = Library:Window({Text = "Floor 1 and 10"})
+local Window2 = Library:Window({Text = "Floor 6"})
+local Window3 = Library:Window({Text = "Floor 1 and 10"})
 local Player = game.Players.LocalPlayer
 
 local function GetHospital()
@@ -35,7 +35,7 @@ local function FindItem(color)
     end
 end
 
-Window6:Button({
+Window2:Button({
     Text = "Go To Hospital",
     Callback = function()
         local hospital = GetHospital()
@@ -50,7 +50,7 @@ for _, color in ipairs({
     "Orange", "Green", "Yellow", "Cyan",
     "White", "Pink", "Red"
 }) do
-    Window6:Button({
+    Window2:Button({
         Text = color .. " Item",
         Callback = function()
             FindItem(color)
@@ -58,14 +58,14 @@ for _, color in ipairs({
     })
 end
 
-Window6:Button({
+Window2:Button({
     Text = "Go To Elevator",
     Callback = function()
         Teleport(Vector3.new(284, 4, 12000))
     end
 })
 
-Window7:Button({
+Window3:Button({
     Text = "Complete Floor 1",
     Callback = function()
 local a = game:GetService("Players")
@@ -732,6 +732,61 @@ getHRP().CFrame = CFrame.new(284, 4, 6000)
 })
 
 Window:Button({
+    Text = "Complete Floor 4",
+    Callback = function()
+local p = game:GetService("Players").LocalPlayer
+local function teleport(cf)
+    local c = p.Character or p.CharacterAdded:Wait()
+    c:WaitForChild("HumanoidRootPart").CFrame = cf
+end
+
+for _, v in ipairs(workspace:GetDescendants()) do
+    if v.Name:match("^GR_99Nights_%d+_%-3$") then
+        local floor = v:FindFirstChild("Floor", true)
+        local forcefield = floor and floor:FindFirstChild("Forcefield")
+
+        if forcefield then
+            teleport(forcefield.CFrame + Vector3.new(0, 3, 0))
+            break
+        end
+    end
+end
+
+task.wait(3)
+teleport(CFrame.new(89, 4, 7669))
+
+local z = workspace:WaitForChild("DancingZombie")
+local h = (p.Character or p.CharacterAdded:Wait()):WaitForChild("HumanoidRootPart")
+local positions = {}
+local start = tick()
+
+while tick() - start < 15 do
+    positions[#positions + 1] = {
+        time = tick() - start,
+        cf = z:GetPivot()
+    }
+    task.wait(0.1)
+end
+
+local playback = tick()
+
+for _, data in ipairs(positions) do
+    local remaining = data.time - (tick() - playback)
+    if remaining > 0 then
+        task.wait(remaining)
+    end
+
+    if h.Parent then
+        h.CFrame = data.cf
+    end
+end
+
+task.wait(5)
+teleport(CFrame.new(274, 4, 7999))
+    end
+})
+
+Window:Button({
     Text = "Complete Floor 5",
     Callback = function()
 local a=game:GetService("Players")
@@ -1229,8 +1284,8 @@ getRoot().CFrame = CFrame.new(277, 4, 17998)
     end
 })
 
-Window7:Button({
-    Text = "Go To Elevator",
+Window3:Button({
+    Text = "Go To Elevator / Floor 1",
     Callback = function()
 local player = game.Players.LocalPlayer
 local character = player.Character or player.CharacterAdded:Wait()
