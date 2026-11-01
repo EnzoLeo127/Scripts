@@ -1243,6 +1243,7 @@ hrp.CFrame = CFrame.new(284, 4, 2000)
 
 Window3:Button({
     Text = "Complete Floor 4",
+    Callback = function()
 local p = game:GetService("Players").LocalPlayer
 local character = p.Character or p.CharacterAdded:Wait()
 local h = character:WaitForChild("HumanoidRootPart")
