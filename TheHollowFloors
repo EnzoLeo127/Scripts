@@ -1243,12 +1243,9 @@ hrp.CFrame = CFrame.new(284, 4, 2000)
 
 Window3:Button({
     Text = "Complete Floor 4",
-    Callback = function()
 local p = game:GetService("Players").LocalPlayer
-local function teleport(cf)
-    local c = p.Character or p.CharacterAdded:Wait()
-    c:WaitForChild("HumanoidRootPart").CFrame = cf
-end
+local character = p.Character or p.CharacterAdded:Wait()
+local h = character:WaitForChild("HumanoidRootPart")
 
 for _, v in ipairs(workspace:GetDescendants()) do
     if v.Name:match("^GR_99Nights_%d+_%-3$") then
@@ -1256,17 +1253,17 @@ for _, v in ipairs(workspace:GetDescendants()) do
         local forcefield = floor and floor:FindFirstChild("Forcefield")
 
         if forcefield then
-            teleport(forcefield.CFrame + Vector3.new(0, 3, 0))
+            h.CFrame = forcefield.CFrame + Vector3.new(0, 3, 0)
             break
         end
     end
 end
 
 task.wait(3)
-teleport(CFrame.new(89, 4, 7669))
 
 local z = workspace:WaitForChild("DancingZombie")
-local h = (p.Character or p.CharacterAdded:Wait()):WaitForChild("HumanoidRootPart")
+h.CFrame = z:GetPivot()
+
 local positions = {}
 local start = tick()
 
@@ -1282,6 +1279,7 @@ local playback = tick()
 
 for _, data in ipairs(positions) do
     local remaining = data.time - (tick() - playback)
+
     if remaining > 0 then
         task.wait(remaining)
     end
@@ -1292,7 +1290,10 @@ for _, data in ipairs(positions) do
 end
 
 task.wait(5)
-teleport(CFrame.new(274, 4, 7999))
+
+if h.Parent then
+    h.CFrame = CFrame.new(274, 4, 7999)
+end
     end
 })
 
