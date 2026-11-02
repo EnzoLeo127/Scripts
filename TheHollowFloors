@@ -1,317 +1,17 @@
 local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/EnzoLeo127/Hub/refs/heads/main/library", true))()
+local Flags = Library.Flags
 Library.DefaultColor = Color3.fromRGB(138, 43, 226)
 
-local Window = Library:Window({Text = "The Hollow - Floors"})
-local Window2 = Library:Window({Text = "Floor 6"})
-local Window3 = Library:Window({Text = "Floor 1, 4 & 10"})
-local Player = game.Players.LocalPlayer
-
-local function GetHospital()
-    for _, v in ipairs(workspace:GetDescendants()) do
-        if v.Name:match("^GR_AnimalHospital_%d+_%-3$") then
-            return v
-        end
-    end
-end
-
-local function Teleport(position)
-    local character = Player.Character or Player.CharacterAdded:Wait()
-    character:WaitForChild("HumanoidRootPart").CFrame = CFrame.new(position)
-end
-
-local function FindItem(color)
-    local hospital = GetHospital()
-    if not hospital then return end
-
-    local brew = hospital:FindFirstChild("WitchesBrew", true)
-    if not brew then return end
-
-    for _, v in ipairs(brew:GetDescendants()) do
-        local prompt = v:FindFirstChild("ProximityPrompt")
-        if v.Name == "BrewCube" and prompt and prompt.ObjectText == color then
-            Teleport(v.Position + Vector3.new(0, 3, 0))
-            return
-        end
-    end
-end
-
-Window2:Button({
-    Text = "Go To Hospital",
-    Callback = function()
-        local hospital = GetHospital()
-        local forcefield = hospital and hospital:FindFirstChild("Forcefield")
-        if forcefield then
-            Teleport(forcefield.Position + Vector3.new(0, 3, 0))
-        end
-    end
+local Window = Library:Window({
+   Text = "The Hollow - Floors"
 })
 
-for _, color in ipairs({
-    "Orange", "Green", "Yellow", "Cyan",
-    "White", "Pink", "Red"
-}) do
-    Window2:Button({
-        Text = color .. " Item",
-        Callback = function()
-            FindItem(color)
-        end
-    })
-end
-
-Window2:Button({
-    Text = "Go To Elevator",
-    Callback = function()
-        Teleport(Vector3.new(284, 4, 12000))
-    end
+local Window2 = Library:Window({
+   Text = "Floor 6"
 })
 
-Window3:Button({
-    Text = "Complete Floor 1",
-    Callback = function()
-local a = game:GetService("Players")
-local b = game:GetService("CollectionService")
-local c = game:GetService("ReplicatedStorage")
-local d = workspace
-local e = a.LocalPlayer
-local f = fireclickdetector or (getgenv and getgenv().fireclickdetector)
-
-assert(f, "fireclickdetector unsupported")
-
-local g = c:WaitForChild("Remotes"):WaitForChild("MazePathCollect")
-
-for h = 1, 50 do
-    pcall(function()
-        g:InvokeServer(h)
-    end)
-end
-
-task.wait(2)
-
-local function i()
-    local j = e.Character
-    return j and j:FindFirstChild("HumanoidRootPart")
-end
-
-local function k(j)
-    local l = i()
-    if l then
-        l.AssemblyLinearVelocity = Vector3.zero
-        l.CFrame = CFrame.new(j)
-    end
-end
-
-local function m(j, l)
-    return (j - l).Magnitude
-end
-
-local function n()
-    for _, j in d:GetChildren() do
-        if j:IsA("Model") then
-            for _, l in j:GetChildren() do
-                if l.Name:find("^GR_Doors") and l:FindFirstChild("Forcefield") then
-                    return l
-                end
-            end
-        end
-    end
-end
-
-local o = n()
-assert(o, "Door not found")
-
-k(o.Forcefield:GetPivot().Position + Vector3.new(0, 4, 0))
-task.wait(1)
-
-local p = o:WaitForChild("MazeLock", 10)
-local q = p and p:FindFirstChild("Board", true)
-assert(q, "Board not found")
-
-local function r()
-    local j = q.Position + q.CFrame.LookVector * 8
-    return Vector3.new(j.X, q.Position.Y - q.Size.Y / 2 + 3, j.Z)
-end
-
-k(r())
-
-local s = d:WaitForChild("MazeDoorFixtures", 15)
-assert(s, "Fixtures not found")
-
-task.wait(1.5)
-
-local function t()
-    local j = {}
-    for _, l in d:GetChildren() do
-        if l.Name == "MazeTile" and l:IsA("Model") then
-            local u = l:FindFirstChild("Base")
-            if u then
-                local v = u:FindFirstChildOfClass("PointLight")
-                local w = u:FindFirstChildOfClass("ClickDetector")
-                if v and not w and m(u.Position, q.Position) > 25 then
-                    j[#j + 1] = u
-                end
-            end
-        end
-    end
-    return j
-end
-
-for x = 1, 10 do
-    local j = t()
-    if #j == 0 then break end
-
-    for _, l in j do
-        k(l.Position + Vector3.new(0, 2, 0))
-        task.wait(1.2)
-    end
-
-    k(r())
-    task.wait(3)
-end
-
-local y = os.clock()
-while s.Parent and s:FindFirstChild("Socket") and os.clock() - y < 20 do
-    task.wait(0.5)
-end
-
-task.wait(1.5)
-
-local z = {
-    {bit = 1, dc = 0, dr = -1, back = 4},
-    {bit = 2, dc = 1, dr = 0, back = 8},
-    {bit = 4, dc = 0, dr = 1, back = 1},
-    {bit = 8, dc = -1, dr = 0, back = 2},
-}
-
-local function A(j, l)
-    for _ = 1, l % 4 do
-        j = (j * 2) % 16 + (j >= 8 and 1 or 0)
-    end
-    return j
-end
-
-local function B()
-    local j = {}
-    for _, l in d:GetChildren() do
-        if l.Name == "MazeTile" and l:IsA("Model") then
-            local u = l:FindFirstChild("Base")
-            local v = u and u:FindFirstChildOfClass("ClickDetector")
-
-            if v and m(u.Position, q.Position) < 15 then
-                j[#j + 1] = {cd = v, mask = 0, base = u}
-                for _, w in l:GetChildren() do
-                    if w.Name == "Arm" then
-                        local x = q.CFrame:VectorToObjectSpace(w.Position - u.Position)
-                        local y
-                        if math.abs(x.Y) > math.abs(x.X) then
-                            y = x.Y > 0 and 1 or 4
-                        else
-                            y = x.X > 0 and 8 or 2
-                        end
-                        j[#j].mask = bit32.bor(j[#j].mask, y)
-                    end
-                end
-            end
-        end
-    end
-
-    local n = math.round(math.sqrt(#j))
-    local cf, sz = q.CFrame, q.Size
-    local pitch = sz.X / n
-    local cells = {}
-
-    for _, l in j do
-        local u = cf:PointToObjectSpace(l.base.Position)
-        local v = math.round((sz.X / 2 - u.X) / pitch - 0.5)
-        local w = math.round((sz.Y / 2 - u.Y) / pitch - 0.5)
-        cells[w * n + v + 1] = l
-    end
-
-    local function C(l)
-        local u = cf:PointToObjectSpace(l.Position)
-        return math.round((sz.Y / 2 - u.Y) / pitch - 0.5)
-    end
-
-    local src, snk = s:FindFirstChild("Source"), s:FindFirstChild("Sink")
-    if not (src and snk) or n == 0 then return end
-
-    return cells, n, C(src) * n + 1, C(snk) * n + n
-end
-
-local function D(j, l, u, v)
-    local w, x = {}, {}
-
-    local function E(y, incoming)
-        x[y] = true
-
-        for rotation = 0, 3 do
-            local mask = A(j[y].mask, rotation)
-
-            if bit32.band(mask, incoming) ~= 0 then
-                if y == v and bit32.band(mask, 2) ~= 0 then
-                    w[y] = rotation
-                    return true
-                end
-
-                for _, dir in ipairs(z) do
-                    if dir.bit ~= incoming and bit32.band(mask, dir.bit) ~= 0 then
-                        local col = (y - 1) % l + dir.dc
-                        local row = (y - 1) // l + dir.dr
-
-                        if col >= 0 and col < l and row >= 0 and row < l then
-                            local nextIndex = row * l + col + 1
-
-                            if j[nextIndex] and not x[nextIndex] and E(nextIndex, dir.back) then
-                                w[y] = rotation
-                                return true
-                            end
-                        end
-                    end
-                end
-            end
-        end
-
-        x[y] = nil
-        return false
-    end
-
-    if j[u] and E(u, 8) then
-        return w
-    end
-end
-
-for H = 1, 3 do
-    local j, l, u, v = B()
-    if not j then break end
-
-    local w = D(j, l, u, v)
-    if not w then break end
-
-    for x, y in w do
-        for _ = 1, y do
-            f(j[x].cd)
-            task.wait(0.15)
-        end
-    end
-
-    task.wait(2.5)
-    if not j[u].cd.Parent or j[u].cd.MaxActivationDistance == 0 then
-        return
-    end
-end
-
-task.wait(1)
-
-for _, a in workspace:GetChildren() do
-    if a:IsA("Model") then
-        for _, b in a:GetChildren() do
-            if b.Name:find("^EL_Theater") and b:FindFirstChild("Forcefield") then
-                k(b.Forcefield:GetPivot().Position + Vector3.new(0, 4, 0))
-                return
-            end
-        end
-    end
-end
-    end
+local Window3 = Library:Window({
+   Text = "More Floors"
 })
 
 Window:Button({
@@ -734,7 +434,6 @@ task.wait(20)
 getHRP().CFrame = CFrame.new(284, 4, 6000)
     end
 })
-
 
 Window:Button({
     Text = "Complete Floor 5",
@@ -1234,6 +933,429 @@ getRoot().CFrame = CFrame.new(277, 4, 17998)
     end
 })
 
+Window2:Button({
+    Text = "Go To Hospital",
+    Callback = function()
+local p = game.Players.LocalPlayer
+for _,v in ipairs(workspace:GetDescendants()) do
+    if v.Name:match("^GR_AnimalHospital_%d+_%-3$") then
+        local f = v:FindFirstChild("Forcefield")
+        if f then
+            p.Character.HumanoidRootPart.CFrame = f.CFrame + Vector3.new(0,3,0)
+            break
+        end
+    end
+end
+    end
+})
+
+Window2:Button({
+    Text = "Orange Item",
+    Callback = function()
+local p = game.Players.LocalPlayer
+for _,v in ipairs(workspace:GetDescendants()) do
+    if v.Name:match("^GR_AnimalHospital_%d+_%-3$") then
+        local f = v:FindFirstChild("WitchesBrew",true)
+        if f then
+            for _,b in ipairs(f:GetDescendants()) do
+                local pr = b:FindFirstChild("ProximityPrompt")
+                if b.Name == "BrewCube" and pr and pr.ObjectText == "Orange" then
+                    p.Character.HumanoidRootPart.CFrame = CFrame.new(b.Position+Vector3.new(0,3,0))
+                    return
+                end
+            end
+        end
+    end
+end
+    end
+})
+
+Window2:Button({
+    Text = "Green Item",
+    Callback = function()
+local p = game.Players.LocalPlayer
+for _,v in ipairs(workspace:GetDescendants()) do
+    if v.Name:match("^GR_AnimalHospital_%d+_%-3$") then
+        local f = v:FindFirstChild("WitchesBrew",true)
+        if f then
+            for _,b in ipairs(f:GetDescendants()) do
+                local pr = b:FindFirstChild("ProximityPrompt")
+                if b.Name == "BrewCube" and pr and pr.ObjectText == "Green" then
+                    p.Character.HumanoidRootPart.CFrame = CFrame.new(b.Position+Vector3.new(0,3,0))
+                    return
+                end
+            end
+        end
+    end
+end
+    end
+})
+
+Window2:Button({
+    Text = "Yellow Item",
+    Callback = function()
+local p = game.Players.LocalPlayer
+for _,v in ipairs(workspace:GetDescendants()) do
+    if v.Name:match("^GR_AnimalHospital_%d+_%-3$") then
+        local f = v:FindFirstChild("WitchesBrew",true)
+        if f then
+            for _,b in ipairs(f:GetDescendants()) do
+                local pr = b:FindFirstChild("ProximityPrompt")
+                if b.Name == "BrewCube" and pr and pr.ObjectText == "Yellow" then
+                    p.Character.HumanoidRootPart.CFrame = CFrame.new(b.Position+Vector3.new(0,3,0))
+                    return
+                end
+            end
+        end
+    end
+end
+    end
+})
+
+Window2:Button({
+    Text = "Cyan Item",
+    Callback = function()
+local p = game.Players.LocalPlayer
+for _,v in ipairs(workspace:GetDescendants()) do
+    if v.Name:match("^GR_AnimalHospital_%d+_%-3$") then
+        local f = v:FindFirstChild("WitchesBrew",true)
+        if f then
+            for _,b in ipairs(f:GetDescendants()) do
+                local pr = b:FindFirstChild("ProximityPrompt")
+                if b.Name == "BrewCube" and pr and pr.ObjectText == "Cyan" then
+                    p.Character.HumanoidRootPart.CFrame = CFrame.new(b.Position+Vector3.new(0,3,0))
+                    return
+                end
+            end
+        end
+    end
+end
+    end
+})
+
+Window2:Button({
+    Text = "White Item",
+    Callback = function()
+local p = game.Players.LocalPlayer
+for _,v in ipairs(workspace:GetDescendants()) do
+    if v.Name:match("^GR_AnimalHospital_%d+_%-3$") then
+        local f = v:FindFirstChild("WitchesBrew",true)
+        if f then
+            for _,b in ipairs(f:GetDescendants()) do
+                local pr = b:FindFirstChild("ProximityPrompt")
+                if b.Name == "BrewCube" and pr and pr.ObjectText == "White" then
+                    p.Character.HumanoidRootPart.CFrame = CFrame.new(b.Position+Vector3.new(0,3,0))
+                    return
+                end
+            end
+        end
+    end
+end
+    end
+})
+
+Window2:Button({
+    Text = "Pink Item",
+    Callback = function()
+local p = game.Players.LocalPlayer
+for _,v in ipairs(workspace:GetDescendants()) do
+    if v.Name:match("^GR_AnimalHospital_%d+_%-3$") then
+        local f = v:FindFirstChild("WitchesBrew",true)
+        if f then
+            for _,b in ipairs(f:GetDescendants()) do
+                local pr = b:FindFirstChild("ProximityPrompt")
+                if b.Name == "BrewCube" and pr and pr.ObjectText == "Pink" then
+                    p.Character.HumanoidRootPart.CFrame = CFrame.new(b.Position+Vector3.new(0,3,0))
+                    return
+                end
+            end
+        end
+    end
+end
+    end
+})
+
+Window2:Button({
+    Text = "Red Item",
+    Callback = function()
+local p = game.Players.LocalPlayer
+for _,v in ipairs(workspace:GetDescendants()) do
+    if v.Name:match("^GR_AnimalHospital_%d+_%-3$") then
+        local f = v:FindFirstChild("WitchesBrew",true)
+        if f then
+            for _,b in ipairs(f:GetDescendants()) do
+                local pr = b:FindFirstChild("ProximityPrompt")
+                if b.Name == "BrewCube" and pr and pr.ObjectText == "Red" then
+                    p.Character.HumanoidRootPart.CFrame = CFrame.new(b.Position+Vector3.new(0,3,0))
+                    return
+                end
+            end
+        end
+    end
+end
+    end
+})
+
+Window2:Button({
+    Text = "Go To Elevator",
+    Callback = function()
+local player = game.Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+local hrp = character:WaitForChild("HumanoidRootPart")
+
+hrp.CFrame = CFrame.new(284, 4, 12000)
+    end
+})
+
+Window3:Button({
+    Text = "Complete Floor 1",
+    Callback = function()
+local a = game:GetService("Players")
+local b = game:GetService("CollectionService")
+local c = game:GetService("ReplicatedStorage")
+local d = workspace
+local e = a.LocalPlayer
+local f = fireclickdetector or (getgenv and getgenv().fireclickdetector)
+
+assert(f, "fireclickdetector unsupported")
+
+local g = c:WaitForChild("Remotes"):WaitForChild("MazePathCollect")
+
+for h = 1, 50 do
+    pcall(function()
+        g:InvokeServer(h)
+    end)
+end
+
+task.wait(2)
+
+local function i()
+    local j = e.Character
+    return j and j:FindFirstChild("HumanoidRootPart")
+end
+
+local function k(j)
+    local l = i()
+    if l then
+        l.AssemblyLinearVelocity = Vector3.zero
+        l.CFrame = CFrame.new(j)
+    end
+end
+
+local function m(j, l)
+    return (j - l).Magnitude
+end
+
+local function n()
+    for _, j in d:GetChildren() do
+        if j:IsA("Model") then
+            for _, l in j:GetChildren() do
+                if l.Name:find("^GR_Doors") and l:FindFirstChild("Forcefield") then
+                    return l
+                end
+            end
+        end
+    end
+end
+
+local o = n()
+assert(o, "Door not found")
+
+k(o.Forcefield:GetPivot().Position + Vector3.new(0, 4, 0))
+task.wait(1)
+
+local p = o:WaitForChild("MazeLock", 10)
+local q = p and p:FindFirstChild("Board", true)
+assert(q, "Board not found")
+
+local function r()
+    local j = q.Position + q.CFrame.LookVector * 8
+    return Vector3.new(j.X, q.Position.Y - q.Size.Y / 2 + 3, j.Z)
+end
+
+k(r())
+
+local s = d:WaitForChild("MazeDoorFixtures", 15)
+assert(s, "Fixtures not found")
+
+task.wait(1.5)
+
+local function t()
+    local j = {}
+    for _, l in d:GetChildren() do
+        if l.Name == "MazeTile" and l:IsA("Model") then
+            local u = l:FindFirstChild("Base")
+            if u then
+                local v = u:FindFirstChildOfClass("PointLight")
+                local w = u:FindFirstChildOfClass("ClickDetector")
+                if v and not w and m(u.Position, q.Position) > 25 then
+                    j[#j + 1] = u
+                end
+            end
+        end
+    end
+    return j
+end
+
+for x = 1, 10 do
+    local j = t()
+    if #j == 0 then break end
+
+    for _, l in j do
+        k(l.Position + Vector3.new(0, 2, 0))
+        task.wait(1.2)
+    end
+
+    k(r())
+    task.wait(3)
+end
+
+local y = os.clock()
+while s.Parent and s:FindFirstChild("Socket") and os.clock() - y < 20 do
+    task.wait(0.5)
+end
+
+task.wait(1.5)
+
+local z = {
+    {bit = 1, dc = 0, dr = -1, back = 4},
+    {bit = 2, dc = 1, dr = 0, back = 8},
+    {bit = 4, dc = 0, dr = 1, back = 1},
+    {bit = 8, dc = -1, dr = 0, back = 2},
+}
+
+local function A(j, l)
+    for _ = 1, l % 4 do
+        j = (j * 2) % 16 + (j >= 8 and 1 or 0)
+    end
+    return j
+end
+
+local function B()
+    local j = {}
+    for _, l in d:GetChildren() do
+        if l.Name == "MazeTile" and l:IsA("Model") then
+            local u = l:FindFirstChild("Base")
+            local v = u and u:FindFirstChildOfClass("ClickDetector")
+
+            if v and m(u.Position, q.Position) < 15 then
+                j[#j + 1] = {cd = v, mask = 0, base = u}
+                for _, w in l:GetChildren() do
+                    if w.Name == "Arm" then
+                        local x = q.CFrame:VectorToObjectSpace(w.Position - u.Position)
+                        local y
+                        if math.abs(x.Y) > math.abs(x.X) then
+                            y = x.Y > 0 and 1 or 4
+                        else
+                            y = x.X > 0 and 8 or 2
+                        end
+                        j[#j].mask = bit32.bor(j[#j].mask, y)
+                    end
+                end
+            end
+        end
+    end
+
+    local n = math.round(math.sqrt(#j))
+    local cf, sz = q.CFrame, q.Size
+    local pitch = sz.X / n
+    local cells = {}
+
+    for _, l in j do
+        local u = cf:PointToObjectSpace(l.base.Position)
+        local v = math.round((sz.X / 2 - u.X) / pitch - 0.5)
+        local w = math.round((sz.Y / 2 - u.Y) / pitch - 0.5)
+        cells[w * n + v + 1] = l
+    end
+
+    local function C(l)
+        local u = cf:PointToObjectSpace(l.Position)
+        return math.round((sz.Y / 2 - u.Y) / pitch - 0.5)
+    end
+
+    local src, snk = s:FindFirstChild("Source"), s:FindFirstChild("Sink")
+    if not (src and snk) or n == 0 then return end
+
+    return cells, n, C(src) * n + 1, C(snk) * n + n
+end
+
+local function D(j, l, u, v)
+    local w, x = {}, {}
+
+    local function E(y, incoming)
+        x[y] = true
+
+        for rotation = 0, 3 do
+            local mask = A(j[y].mask, rotation)
+
+            if bit32.band(mask, incoming) ~= 0 then
+                if y == v and bit32.band(mask, 2) ~= 0 then
+                    w[y] = rotation
+                    return true
+                end
+
+                for _, dir in ipairs(z) do
+                    if dir.bit ~= incoming and bit32.band(mask, dir.bit) ~= 0 then
+                        local col = (y - 1) % l + dir.dc
+                        local row = (y - 1) // l + dir.dr
+
+                        if col >= 0 and col < l and row >= 0 and row < l then
+                            local nextIndex = row * l + col + 1
+
+                            if j[nextIndex] and not x[nextIndex] and E(nextIndex, dir.back) then
+                                w[y] = rotation
+                                return true
+                            end
+                        end
+                    end
+                end
+            end
+        end
+
+        x[y] = nil
+        return false
+    end
+
+    if j[u] and E(u, 8) then
+        return w
+    end
+end
+
+for H = 1, 3 do
+    local j, l, u, v = B()
+    if not j then break end
+
+    local w = D(j, l, u, v)
+    if not w then break end
+
+    for x, y in w do
+        for _ = 1, y do
+            f(j[x].cd)
+            task.wait(0.15)
+        end
+    end
+
+    task.wait(2.5)
+    if not j[u].cd.Parent or j[u].cd.MaxActivationDistance == 0 then
+        return
+    end
+end
+
+task.wait(1)
+
+for _, a in workspace:GetChildren() do
+    if a:IsA("Model") then
+        for _, b in a:GetChildren() do
+            if b.Name:find("^EL_Theater") and b:FindFirstChild("Forcefield") then
+                k(b.Forcefield:GetPivot().Position + Vector3.new(0, 4, 0))
+                return
+            end
+        end
+    end
+end
+    end
+})
+
 Window3:Button({
     Text = "Go To Elevator / Floor 1",
     Callback = function()
@@ -1328,18 +1450,29 @@ for _, position in ipairs(positions) do
 
     hrp.CFrame = CFrame.new(position)
 
-    task.wait(7)
+    task.wait(13)
 end
     end
 })
 
-Window:Button({
-    Text = "Copy Youtube link",
+Window3:Button({
+    Text = "Go To Elevator / Floor 2",
     Callback = function()
-        setclipboard("https://www.youtube.com/@14kGreenz")
-        Library:Notification({
-            Text = "youtube link copied to clipboard",
-            Duration = 6
-        })
+local player = game.Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+local hrp = character:WaitForChild("HumanoidRootPart")
+
+hrp.CFrame = CFrame.new(273, 4, 4000)
     end
+})
+
+Window:Button({
+   Text = "Copy Youtube Link",
+   Callback = function()
+      setclipboard(" https://www.youtube.com/@GreenzScripts ")
+       Library:Notification({
+           Text = "youtube link copied to clipboard",
+           Duration = 6
+       })
+   end
 })
